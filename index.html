@@ -237,7 +237,12 @@
       filtered.forEach(v => {
         const div = document.createElement("div");
         div.className = "video";
-        div.innerHTML = `
+        div.innerHTML = `
+          <img src="${v["Thumbnail URL"]}" alt="Thumbnail" />
+          <div class="video-title">${v["Video Title"]}</div>
+          <div class="video-meta">📅 ${v["Published Date"].split("T")[0]}</div>
+          <div class="video-meta">🏷️ ${v["Category"]} – 👤 ${v["Manager Name"]}</div>
+          <div class="video-meta">📺 ${v["Channel Name"]}</div>
           <a href="${v["Video Link"]}" target="_blank" style="display:inline-block;margin-top:10px;padding:8px 16px;background-color:var(--red);color:white;text-decoration:none;border-radius:20px;font-size:13px;font-weight:bold;">Watch Video</a>
         `;
         container.appendChild(div);

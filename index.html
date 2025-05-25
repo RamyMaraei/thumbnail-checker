@@ -176,7 +176,10 @@
   <h1 id="pageTitle">YouTube Thumbnail Viewer</h1>
 
   <div class="controls">
+    <button onclick="setToday()">Today</button>
+    <label for="fromDate">From</label>
     <input type="date" id="fromDate" />
+    <label for="toDate">To</label>
     <input type="date" id="toDate" />
     <select id="managerSelect">
       <option value="">All Managers</option>
@@ -269,6 +272,12 @@
     }
 
     loadData();
+
+    function setToday() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('fromDate').value = today;
+      document.getElementById('toDate').value = today;
+    }
   </script>
 </body>
 </html>

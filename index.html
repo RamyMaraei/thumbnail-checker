@@ -1,20 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="favicon.png" type="image/png">
   <title>Thumbnail Checker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #121212;
+      --text: #f0f0f0;
+      --box: #1e1e1e;
+      --button: #333;
+      --link: #7abaff;
+      --red: #ff002b;
+      --accent: #f4f0ed;
+    }
+
+    body.light {
+      --bg: #ffffff;
+      --text: #000000;
+      --box: #f5f5f5;
+      --button: #e0e0e0;
+      --link: #1a0dab;
+    }
+
     body {
-      font-family: sans-serif;
-      background: #111;
-      color: #fff;
+      font-family: 'Alexandria', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
       padding: 20px;
+      margin: 0;
+      transition: all 0.3s ease;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 20px auto;
+      max-width: 150px;
+    }
+
+    .logo-light {
+      display: none;
+    }
+
+    body.light .logo-dark {
+      display: none;
+    }
+
+    body.light .logo-light {
+      display: block;
     }
 
     h1 {
       text-align: center;
       margin-bottom: 20px;
+      font-weight: 700;
     }
 
     .controls {
@@ -22,61 +63,85 @@
       margin-bottom: 20px;
     }
 
-    .controls input,
-    .controls select {
+    input[type="date"], select {
+      padding: 10px;
       margin: 5px;
-      padding: 8px;
-      font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #444;
+      background-color: var(--box);
+      color: var(--text);
+      font-family: 'Alexandria', sans-serif;
     }
 
-    .videos {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      background-color: var(--button);
+      color: var(--text);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Alexandria', sans-serif;
+    }
+
+    button:hover {
+      background-color: #666;
     }
 
     .video {
-      background: #222;
-      border-radius: 10px;
-      padding: 10px;
-      width: 300px;
+      background-color: var(--box);
+      padding: 15px;
+      margin: 20px auto;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      max-width: 900px;
     }
 
     .video img {
       width: 100%;
-      border-radius: 8px;
+      border-radius: 10px;
     }
 
     .video-title {
-      font-size: 16px;
       font-weight: bold;
-      margin: 10px 0 5px;
+      font-size: 18px;
+      margin-top: 10px;
     }
 
     .video-meta {
-      font-size: 13px;
-      color: #ccc;
+      font-size: 14px;
+      color: gray;
     }
 
-    a {
-      color: #7abaff;
+    footer {
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 14px;
+      color: gray;
     }
   </style>
 </head>
 <body>
-  <h1>🧠 Thumbnail Checker</h1>
+  <img class="logo logo-dark" src="https://ramymaraei.github.io/banner-checker/ALFAN_LOGO-LIGHT-Small.png" alt="Logo Dark" />
+  <img class="logo logo-light" src="https://ramymaraei.github.io/banner-checker/ALFAN_LOGO-Small.png" alt="Logo Light" />
+
+  <h1 id="pageTitle">YouTube Thumbnail Viewer</h1>
 
   <div class="controls">
-    <label>From: <input type="date" id="fromDate" /></label>
-    <label>To: <input type="date" id="toDate" /></label>
+    <input type="date" id="fromDate" />
+    <input type="date" id="toDate" />
     <select id="managerSelect">
       <option value="">All Managers</option>
     </select>
     <button onclick="filterVideos()">Apply Filter</button>
+    <button onclick="toggleMode()">🌓 Toggle Theme</button>
+    <button onclick="window.open('https://ramymaraei.github.io/banner-checker/QRCodeReader.html', '_blank')">📷 QR Scanner</button>
   </div>
 
-  <div class="videos" id="videosContainer">Loading...</div>
+  <div id="videosContainer">Loading...</div>
+
+  <footer id="footerText">© 2025 Alfan Co. – Designed and developed by Ramy Maraei | Data powered by YouTube</footer>
 
   <script>
     const apiURL = "https://script.google.com/macros/s/AKfycbyM-lZifdsKvcKp1QMkfZQpZGbrsYInvcrEXmOJhH3p1mgaiiom_JEjSSPnLNVdZnNdsA/exec";
@@ -85,7 +150,6 @@
     async function loadData() {
       const res = await fetch(apiURL);
       allVideos = await res.json();
-
       populateManagerList();
       filterVideos();
     }
@@ -116,7 +180,7 @@
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = "<p>No videos found.</p>";
+        container.innerHTML = "<p>No videos found within the selected range.</p>";
         return;
       }
 
@@ -127,12 +191,20 @@
           <img src="${v["Thumbnail URL"]}" alt="Thumbnail" />
           <div class="video-title">${v["Video Title"]}</div>
           <div class="video-meta">📅 ${v["Published Date"].split("T")[0]}</div>
+          <div class="video-meta">🏷️ ${v["Category"]} – 👤 ${v["Manager Name"]}</div>
           <div class="video-meta">📺 ${v["Channel Name"]}</div>
-          <div class="video-meta">👤 ${v["Manager Name"]}</div>
-          <a href="${v["Video Link"]}" target="_blank">Watch Video</a>
         `;
         container.appendChild(div);
       });
+    }
+
+    function toggleMode() {
+      document.body.classList.toggle("light");
+      localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+    }
+
+    if (localStorage.getItem("theme") === "light") {
+      document.body.classList.add("light");
     }
 
     loadData();

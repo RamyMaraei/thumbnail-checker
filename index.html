@@ -34,6 +34,28 @@
       transition: all 0.3s ease;
     }
 
+    .top-tools {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .tool-button {
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .tool-button:hover {
+      background-color: var(--button);
+    }
+
     .logo {
       display: block;
       margin: 0 auto 20px auto;
@@ -119,6 +141,21 @@
       color: gray;
     }
 
+    #backToTop {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      z-index: 1000;
+      font-size: 16px;
+      padding: 10px 15px;
+      background-color: var(--red);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      display: none;
+    }
+
     footer {
       text-align: center;
       padding: 20px 10px;
@@ -128,6 +165,11 @@
   </style>
 </head>
 <body>
+  <div class="top-tools">
+    <button class="tool-button" id="themeBtn" onclick="toggleMode()">🌙 Dark</button>
+    <button class="tool-button" onclick="window.open('https://ramymaraei.github.io/banner-checker/QRCodeReader.html', '_blank')">📷 QR</button>
+  </div>
+
   <img class="logo logo-dark" src="https://ramymaraei.github.io/banner-checker/ALFAN_LOGO-LIGHT-Small.png" alt="Logo Dark" />
   <img class="logo logo-light" src="https://ramymaraei.github.io/banner-checker/ALFAN_LOGO-Small.png" alt="Logo Light" />
 
@@ -140,11 +182,11 @@
       <option value="">All Managers</option>
     </select>
     <button onclick="filterVideos()">Apply Filter</button>
-    <button onclick="toggleMode()">🌓 Toggle Theme</button>
-    <button onclick="window.open('https://ramymaraei.github.io/banner-checker/QRCodeReader.html', '_blank')">📷 QR Scanner</button>
   </div>
 
   <div id="videosContainer" class="videos-grid">Loading...</div>
+
+  <button id="backToTop" onclick="scrollToTop()">Top</button>
 
   <footer id="footerText">© 2025 Alfan Co. – Designed and developed by Ramy Maraei | Data powered by YouTube</footer>
 
@@ -204,12 +246,30 @@
     }
 
     function toggleMode() {
-      document.body.classList.toggle("light");
-      localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+      const body = document.body;
+      const themeBtn = document.getElementById("themeBtn");
+      const isLight = body.classList.toggle("light");
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+      themeBtn.innerHTML = isLight ? "☀️ Light" : "🌙 Dark";
     }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById("backToTop");
+      if (window.scrollY > 300) {
+        btn.style.display = 'block';
+      } else {
+        btn.style.display = 'none';
+      }
+    });
 
     if (localStorage.getItem("theme") === "light") {
       document.body.classList.add("light");
+      const themeBtn = document.getElementById("themeBtn");
+      if (themeBtn) themeBtn.innerHTML = "☀️ Light";
     }
 
     loadData();

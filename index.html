@@ -89,13 +89,18 @@
       background-color: #666;
     }
 
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
     .video {
       background-color: var(--box);
       padding: 15px;
-      margin: 20px auto;
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-      max-width: 900px;
     }
 
     .video img {
@@ -105,12 +110,12 @@
 
     .video-title {
       font-weight: bold;
-      font-size: 18px;
+      font-size: 16px;
       margin-top: 10px;
     }
 
     .video-meta {
-      font-size: 14px;
+      font-size: 13px;
       color: gray;
     }
 
@@ -139,7 +144,7 @@
     <button onclick="window.open('https://ramymaraei.github.io/banner-checker/QRCodeReader.html', '_blank')">📷 QR Scanner</button>
   </div>
 
-  <div id="videosContainer">Loading...</div>
+  <div id="videosContainer" class="videos-grid">Loading...</div>
 
   <footer id="footerText">© 2025 Alfan Co. – Designed and developed by Ramy Maraei | Data powered by YouTube</footer>
 

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thumbnail Checker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .controls input,
+    .controls select {
+      margin: 5px;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    .videos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .video {
+      background: #222;
+      border-radius: 10px;
+      padding: 10px;
+      width: 300px;
+    }
+
+    .video img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .video-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 10px 0 5px;
+    }
+
+    .video-meta {
+      font-size: 13px;
+      color: #ccc;
+    }
+
+    a {
+      color: #7abaff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Thumbnail Checker</h1>
+
+  <div class="controls">
+    <label>From: <input type="date" id="fromDate" /></label>
+    <label>To: <input type="date" id="toDate" /></label>
+    <select id="managerSelect">
+      <option value="">All Managers</option>
+    </select>
+    <button onclick="filterVideos()">Apply Filter</button>
+  </div>
+
+  <div class="videos" id="videosContainer">Loading...</div>
+
+  <script>
+    const apiURL = "https://script.google.com/macros/s/AKfycbyM-lZifdsKvcKp1QMkfZQpZGbrsYInvcrEXmOJhH3p1mgaiiom_JEjSSPnLNVdZnNdsA/exec";
+    let allVideos = [];
+
+    async function loadData() {
+      const res = await fetch(apiURL);
+      allVideos = await res.json();
+
+      populateManagerList();
+      filterVideos();
+    }
+
+    function populateManagerList() {
+      const select = document.getElementById("managerSelect");
+      const managers = [...new Set(allVideos.map(v => v["Manager Name"]))].sort();
+      managers.forEach(m => {
+        const option = document.createElement("option");
+        option.value = m;
+        option.textContent = m;
+        select.appendChild(option);
+      });
+    }
+
+    function filterVideos() {
+      const from = new Date(document.getElementById("fromDate").value || "2000-01-01");
+      const to = new Date(document.getElementById("toDate").value || "2100-01-01");
+      const manager = document.getElementById("managerSelect").value;
+      const container = document.getElementById("videosContainer");
+      container.innerHTML = "";
+
+      const filtered = allVideos.filter(v => {
+        const date = new Date(v["Published Date"]);
+        const inRange = date >= from && date <= to;
+        const byManager = !manager || v["Manager Name"] === manager;
+        return inRange && byManager;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = "<p>No videos found.</p>";
+        return;
+      }
+
+      filtered.forEach(v => {
+        const div = document.createElement("div");
+        div.className = "video";
+        div.innerHTML = `
+          <img src="${v["Thumbnail URL"]}" alt="Thumbnail" />
+          <div class="video-title">${v["Video Title"]}</div>
+          <div class="video-meta">📅 ${v["Published Date"].split("T")[0]}</div>
+          <div class="video-meta">📺 ${v["Channel Name"]}</div>
+          <div class="video-meta">👤 ${v["Manager Name"]}</div>
+          <a href="${v["Video Link"]}" target="_blank">Watch Video</a>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

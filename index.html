@@ -220,6 +220,7 @@
     function filterVideos() {
       const from = new Date(document.getElementById("fromDate").value || "2000-01-01");
       const to = new Date(document.getElementById("toDate").value || "2100-01-01");
+      to.setHours(23, 59, 59, 999);
       const manager = document.getElementById("managerSelect").value;
       const keyword = document.getElementById("searchBox").value.toLowerCase();
       const container = document.getElementById("videosContainer");

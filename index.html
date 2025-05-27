@@ -186,6 +186,11 @@
     <select id="managerSelect">
       <option value="">All Managers</option>
     </select>
+    <select id="videoTypeSelect">
+      <option value="">All Types</option>
+      <option value="short">Shorts</option>
+      <option value="long">Long</option>
+    </select>
     <button onclick="filterVideos()">Apply Filter</button>
   </div>
 
@@ -223,6 +228,7 @@
       to.setHours(23, 59, 59, 999);
       const manager = document.getElementById("managerSelect").value;
       const keyword = document.getElementById("searchBox").value.toLowerCase();
+      const type = document.getElementById("videoTypeSelect").value;
       const container = document.getElementById("videosContainer");
       container.innerHTML = "";
 
@@ -234,7 +240,8 @@
           v["Channel Name"].toLowerCase().includes(keyword) ||
           v["Channel ID"].toLowerCase().includes(keyword) ||
           v["Video Title"].toLowerCase().includes(keyword);
-        return inRange && byManager && match;
+        const byType = !type || v["Video Type"] === type;
+        return inRange && byManager && match && byType;
       });
 
       if (filtered.length === 0) {
@@ -250,7 +257,7 @@
           <div class="video-title">${v["Video Title"]}</div>
           <div class="video-meta">📅 ${v["Published Date"].split("T")[0]}</div>
           <div class="video-meta">🏷️ ${v["Category"]} – 👤 ${v["Manager Name"]}</div>
-          <div class="video-meta">📺 ${v["Channel Name"]}</div>
+          <div class="video-meta">📺 ${v["Channel Name"]} – 🎞️ ${v["Video Type"] || 'unknown'}</div>
           <a href="${v["Video Link"]}" target="_blank" style="display:inline-block;margin-top:10px;padding:8px 16px;background-color:var(--red);color:white;text-decoration:none;border-radius:20px;font-size:13px;font-weight:bold;">Watch Video</a>
         `;
         container.appendChild(div);
